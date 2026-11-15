@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;overflow:hidden;background:#f5f2e9}iframe{display:block;border:0}</style></head><body><script>
+const args=new URLSearchParams(location.search),width=Number(args.get('width'))||1440,lang=args.get('lang')||'sk',scene=args.get('scene')||'hero';
+const f=document.createElement('iframe');f.width=width;f.height=1100;f.title='Portfolio browser check';
+const report=document.createElement('pre');report.id='qa-report';report.hidden=!args.has('report');document.body.append(report);const results=[];const publish=complete=>report.textContent=JSON.stringify({width,lang,scene,complete,passed:results.every(r=>r.pass),results});const check=(name,pass,detail)=>{results.push({name,pass:!!pass,...(detail?{detail}:{})});publish(false);};
+f.addEventListener('load',async()=>{
+try{
+const w=f.contentWindow,d=f.contentDocument;
+check('explicit language restored',d.documentElement.lang===lang);
+check('note deep link opens',d.querySelector('#note-ai-first details').open);
+check('viewport width',w.innerWidth===width,String(w.innerWidth));
+for(const language of ['sk','en']){
+d.querySelector('[data-lang="'+language+'"]').click();
+check('language switch '+language,d.documentElement.lang===language);
+check('shareable language URL '+language,new URL(w.location.href).searchParams.get('lang')===language);
+check('matching profile '+language,d.querySelector('#download-profile').href.endsWith('jan-janda-profile-'+language+'.pdf'));
+check('matching metadata '+language,d.title===d.querySelector('meta[property="og:title"]').content);
+const download=await fetch(d.querySelector('#download-profile').href);
+check('PDF download '+language,download.ok&&download.headers.get('Content-Type').includes('pdf'));
+for(const [filter,count] of [['engineering',4],['ai',1],['all',6]]){
+d.querySelector('[data-track="'+filter+'"]').click();
+check('offer filter '+language+' '+filter,d.querySelectorAll('.project:not([hidden])').length===count);
+}
+const card=d.querySelector('#note-ai-first');const details=card.querySelector('details');
+details.open=false;card.querySelector('.note-permalink').click();
+check('same note link reopens '+language,details.open);
+details.open=false;card.querySelector('summary').click();check('native note disclosure '+language,details.open);
+check('all four notes '+language,d.querySelectorAll('.note').length===4);
+check('no unfinished client copy '+language,!/\b(?:draft|pilot|coming soon)\b|budú doplnené|pribudnú postupne|Prvé koncepty|first drafts/i.test(d.body.innerText));
+check('no horizontal overflow '+language,d.documentElement.scrollWidth<=d.documentElement.clientWidth,d.documentElement.scrollWidth+'/'+d.documentElement.clientWidth);
+}
+const trigger=d.querySelector('.project-open');trigger.click();
+check('dialog opens',d.querySelector('dialog').open);
+check('dialog focuses close',d.activeElement===d.querySelector('#dialog-close'));
+d.querySelector('#dialog-close').click();await new Promise(r=>w.setTimeout(r,100));check('dialog closes',!d.querySelector('dialog').open);
+check('dialog restores focus',d.activeElement===trigger);
+check('contact LinkedIn',d.querySelector('#contact a').href==='https://www.linkedin.com/in/j%C3%A1n-janda-0052a4221/');
+check('contact target resolved',!!d.querySelector('#contact-title'));
+d.querySelector('[data-lang="'+lang+'"]').click();
+d.documentElement.style.scrollBehavior='auto';
+if(scene==='notes'){d.querySelector('#note-ai-first details').open=true;d.querySelector('#notes').scrollIntoView({block:'start'});}
+else if(scene==='contact'){d.querySelector('#contact').scrollIntoView({block:'start'});}
+else if(scene==='showcase'){d.querySelector('#showcase').scrollIntoView({block:'start'});}
+else{w.scrollTo({top:0,behavior:'instant'});}
+}catch(e){check('no exception',false,String(e.stack||e));}
+publish(true);
+});
+f.src='/index.html?lang='+lang+'#note-ai-first';document.body.append(f);
+</script></body></html>

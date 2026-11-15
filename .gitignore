@@ -1,0 +1,14 @@
+# Local collaboration context and original snapshots.
+AGENTS.md
+.agents/
+backups/
+
+# File handoff bundle; Pages serves the website and PDF profiles directly.
+output/share/
+
+# Temporary authoring and browser-check inputs.
+.prepare-*.py
+.release-content.json
+.notes-content-proposal.json
+.browser-check.html
+__pycache__/
