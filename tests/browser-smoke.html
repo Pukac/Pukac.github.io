@@ -16,9 +16,14 @@ check('matching profile '+language,d.querySelector('#download-profile').href.end
 check('matching metadata '+language,d.title===d.querySelector('meta[property="og:title"]').content);
 const download=await fetch(d.querySelector('#download-profile').href);
 check('PDF download '+language,download.ok&&download.headers.get('Content-Type').includes('pdf'));
-for(const [filter,count] of [['engineering',4],['ai',1],['all',6]]){
-d.querySelector('[data-track="'+filter+'"]').click();
+for(const filter of ['engineering','mobile','ai','all']){
+const count=[...d.querySelectorAll('.project')].filter(row=>filter==='all'||row.dataset.category===filter).length;
+(d.querySelector('[data-track="'+filter+'"]')||d.querySelector('[data-filter="'+filter+'"]')).click();
 check('offer filter '+language+' '+filter,d.querySelectorAll('.project:not([hidden])').length===count);
+if(filter==='mobile'){
+const apps=[...d.querySelectorAll('.project:not([hidden])')].map(row=>row.textContent);
+check('two named Android apps '+language,apps.length===2&&apps.some(text=>text.includes('JJ Poems'))&&apps.some(text=>text.includes('DrinkWater Ritual')));
+}
 }
 const card=d.querySelector('#note-ai-first');const details=card.querySelector('details');
 details.open=false;card.querySelector('.note-permalink').click();
@@ -37,7 +42,8 @@ check('contact LinkedIn',d.querySelector('#contact a').href==='https://www.linke
 check('contact target resolved',!!d.querySelector('#contact-title'));
 d.querySelector('[data-lang="'+lang+'"]').click();
 d.documentElement.style.scrollBehavior='auto';
-if(scene==='notes'){d.querySelector('#note-ai-first details').open=true;d.querySelector('#notes').scrollIntoView({block:'start'});}
+if(scene==='mobile'){d.querySelector('[data-filter="mobile"]').click();d.querySelector('#work').scrollIntoView({block:'start'});}
+else if(scene==='notes'){d.querySelector('#note-ai-first details').open=true;d.querySelector('#notes').scrollIntoView({block:'start'});}
 else if(scene==='contact'){d.querySelector('#contact').scrollIntoView({block:'start'});}
 else if(scene==='showcase'){d.querySelector('#showcase').scrollIntoView({block:'start'});}
 else{w.scrollTo({top:0,behavior:'instant'});}

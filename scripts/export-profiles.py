@@ -71,7 +71,7 @@ for language, c in CONTENT.items():
                                ('BOTTOMPADDING',(0,0),(-1,-1),0)]))
     flow += [offers, p(c['profileExperience'], 'heading'), p(c['profileExperienceCopy']),
              p(c['processLabel'], 'heading'), p(c['profileMethod']),
-             p(c['printSkills'], 'heading'), p('C# / .NET / WPF / Python / OpenCV / PyQt / SDK / GitLab CI'),
+             p(c['printSkills'], 'heading'), p(c['profileStack']),
              p(c['profilePersonal'], 'small'), Spacer(1, 8)]
     label = 'LinkedIn: Ján Janda'
     link = '<link href="https://www.linkedin.com/in/j%C3%A1n-janda-0052a4221/" color="#4c5844"><u>'+label+'</u></link>'

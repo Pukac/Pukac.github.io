@@ -20,6 +20,6 @@ With the repository served at `http://127.0.0.1:8765/`, open:
 
 `http://127.0.0.1:8765/tests/browser-smoke.html?width=390&lang=en&scene=hero&report=1`
 
-The same-origin test frame loads the actual page and uses programmatic clicks to check languages, links, notes, filters, modal close/focus and PDF responses. Choose width 320, 390, 768 or 1440; scene may be hero, notes, showcase or contact. A completed report has `complete: true` and `passed: true`. The report is hidden unless `report=1` is present, so screenshots can show the page without test text.
+The same-origin test frame loads the actual page and uses programmatic clicks to check languages, links, notes, filters (including Android apps), modal close/focus and PDF responses. Choose width 320, 390, 768 or 1440; scene may be hero, mobile, notes, showcase or contact. A completed report has `complete: true` and `passed: true`. The report is hidden unless `report=1` is present, so screenshots can show the page without test text.
 
 These checks do not simulate assistive technology or a complete keyboard-only journey. Fixed-width frames verify responsive CSS, not an actual mobile device.
